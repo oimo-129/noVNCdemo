@@ -13,7 +13,9 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
-import RFB from '@novnc/novnc/lib/rfb.js';
+import RFB from '@novnc/novnc/lib/rfb';
+//noVNC这个模块使用cmj导出对象，webpack无法处理，导致浏览器中exports未定义
+//import RFB from '@novnc/novnc/core/rfb.js';
 
 export default {
   name: 'VncViewer',
@@ -37,7 +39,7 @@ export default {
 
       // 创建 noVNC RFB 实例
       rfb = new RFB(vncScreen.value, wsUrl, {
-        credentials: { password: 'password' }, // 这是你在 start_services.sh 中设置的密码
+        credentials: { password: '123456' }, // 这是你在 start_services.sh 中设置的密码
       });
 
       // 添加事件监听器来更新状态

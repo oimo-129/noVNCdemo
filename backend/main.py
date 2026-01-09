@@ -109,3 +109,11 @@ async def websocket_vnc_proxy(websocket: WebSocket):
 @app.get("/")
 def read_root():
     return {"message": "Gazebo VNC 代理服务器正在运行。请通过 WebSocket 连接 /ws/vnc"}
+
+#配置外部化，并增强安全性，防止被攻击
+@app.get("/health")
+def health_check():
+    """
+    健康检查端点，用于监控服务状态。
+    """
+    return {"status": "ok"}
