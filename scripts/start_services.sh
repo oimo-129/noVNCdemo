@@ -1,4 +1,4 @@
-    #!/bin/bash
+#!/bin/bash
 
     # --- 配置 ---
     # 设置虚拟显示器的 DISPLAY ID，例如 :1
