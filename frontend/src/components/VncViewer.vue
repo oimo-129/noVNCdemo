@@ -11,86 +11,80 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import RFB from '@novnc/novnc/lib/rfb';
+import RFB from '@novnc/novnc/lib/rfb';//远程帧缓冲，与服务器端x11vnc通信 
 //noVNC这个模块使用cmj导出对象，webpack无法处理，导致浏览器中exports未定义
 //import RFB from '@novnc/novnc/core/rfb.js';
+//目前无法处理，直接在webpack禁用错误覆盖层+
 
-export default {
-  name: 'VncViewer',
-  setup() {
-    const vncScreen = ref(null); // 用于引用屏幕 div 元素
-    const status = ref('disconnected'); // 连接状态
-    const error = ref(''); // 错误信息
-    let rfb = null; // RFB 实例
 
-    const connect = () => {
-      if (rfb) {
-        rfb.disconnect();
-      }
+const vncScreen = ref(null); // 用于引用屏幕 div 元素
+const status = ref('disconnected'); // 连接状态
+const error = ref(''); // 错误信息
+let rfb = null; // RFB 实例
 
-      // 从浏览器地址栏动态构建 WebSocket URL
-      // 这使得它在开发环境 (localhost) 和生产环境都能正确工作
-      const wsUrl = `ws://${window.location.hostname}:8000/ws/vnc`;
-      status.value = 'connecting';
-      error.value = '';
-      console.log(`正在连接到 ${wsUrl}...`);
+const connect = () => {
+  if (rfb) {
+    rfb.disconnect();
+  }
 
-      // 创建 noVNC RFB 实例
-      rfb = new RFB(vncScreen.value, wsUrl, {
-        credentials: { password: '123456' }, // 这是你在 start_services.sh 中设置的密码
-      });
+  // 从浏览器地址栏动态构建 WebSocket URL
+  // 这使得它在开发环境 (localhost) 和生产环境都能正确工作，默认前后端同ip
+  const wsUrl = `ws://${location.hostname}:8000/ws/vnc`;
+  status.value = 'connecting';
+  error.value = '';
+  console.log(`正在连接到 ${wsUrl}...`);
 
-      // 添加事件监听器来更新状态
-      rfb.addEventListener('connect', () => {
-        status.value = 'connected';
-        console.log('VNC 已连接');
-      });
+  // 创建 noVNC RFB 实例
+  rfb = new RFB(vncScreen.value, wsUrl, {
+    credentials: { password: '123456' }, // 服务器x11vnc设定的连接密码
+  });
 
-      rfb.addEventListener('disconnect', (e) => {
-        status.value = 'disconnected';
-        console.log('VNC 已断开连接:', e.detail);
-        if (!e.detail.clean) {
-          error.value = '连接意外断开。';
-        }
-      });
+  // 添加事件监听器来更新状态
+  rfb.addEventListener('connect', () => {
+    status.value = 'connected';
+    console.log('VNC 已连接');
+  });
 
-      rfb.addEventListener('securityfailure', (e) => {
-        status.value = 'failed';
-        error.value = `安全认证失败: ${e.detail.reason}`;
-        console.error('VNC 安全认证失败:', e.detail.reason);
-      });
-    };
+  rfb.addEventListener('disconnect', (e) => {
+    status.value = 'disconnected';
+    console.log('VNC 已断开连接:', e.detail);
+    if (!e.detail.clean) {
+      error.value = '连接意外断开。';
+    }
+  });
 
-    // 组件挂载后自动连接
-    onMounted(() => {
-      if (vncScreen.value) {
-        connect();
-      }
-    });
-
-    // 组件卸载时断开连接，防止内存泄漏
-    onUnmounted(() => {
-      if (rfb) {
-        rfb.disconnect();
-      }
-    });
-
-    return {
-      vncScreen,
-      status,
-      error,
-      connect,
-    };
-  },
+  rfb.addEventListener('securityfailure', (e) => {
+    status.value = 'failed';
+    error.value = `安全认证失败: ${e.detail.reason}`;
+    console.error('VNC 安全认证失败:', e.detail.reason);
+  });
 };
+
+// 组件挂载后自动连接
+onMounted(() => {
+  if (vncScreen.value) {
+    connect();
+  }
+});
+
+// 组件卸载时断开连接，防止内存泄漏
+onUnmounted(() => {
+  if (rfb) {
+    rfb.disconnect();
+  }
+});
+
+
 </script>
 
 <style scoped>
 .vnc-container {
-  width: 100vw; /* 视口宽度 */
-  height: 100vh; /* 视口高度 */
+  width: 100vw;
+  /* 视口宽度 */
+  height: 100vh;
+  /* 视口高度 */
   position: relative;
   background-color: #000;
 }

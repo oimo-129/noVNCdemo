@@ -10,7 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # VNC 服务器的地址和端口
-VNC_SERVER_HOST = "localhost"
+VNC_SERVER_HOST = "192.168.20.164"
 VNC_SERVER_PORT = 5900
 
 # --- FastAPI 应用实例 ---
