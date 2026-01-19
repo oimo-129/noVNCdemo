@@ -11,24 +11,28 @@ This file tracks the learning progress for the Vue CLI tutorial.
 - **Project Structure**: Learned the roles of `src/`, `public/`, `package.json`, and other key files.
 - **Hot Module Replacement (HMR)**: Experienced modifying a component and seeing the browser update instantly without a full reload.
 
-### Phase 2: Advancing (Partial)
-- **Plugin System**: Added Vue Router using `vue add router` to enable multi-page navigation.
-- **Build & Deployment**: 
-    - Learned the difference between the development environment and a production build.
-    - Used `npm run build` to generate the production-ready `dist` folder.
-    - Installed and used the `serve` package (`serve -s dist`) to locally preview the production build, simulating a real server environment.
+### Phase 2: Advancing (In Progress)
+
+- **Vue Router (Completed)**
+    - **Core Concepts**: Understood its role, the difference between `<router-link>` and `<a>`, and how it prevents full-page reloads.
+    - **Navigation Guards**: Mastered `router.beforeEach` to implement route-based authentication for login control.
+    - **Lazy Loading**: Understood and implemented lazy loading with `() => import()` for performance optimization.
+
+- **State Management with Pinia (Started)**
+    - **Understood the "Why"**: Grasped the concept of a central store to avoid "prop drilling".
+    - **Setup**: Successfully installed Pinia and registered it in `main.js`.
 
 ### Core Concepts Understood
 - **Vue CLI's Role**: Understood that it's a full toolchain for development, building, and testing, not just a scaffolder.
 - **Webpack Abstraction**: Learned that Vue CLI hides Webpack configuration for simplicity but allows customization via `vue.config.js`.
-- **Modules**: Differentiated between CommonJS (`require`) used in Node-based configurations (`vue.config.js`) and ES Modules (`import`/`export`) used in the application source code (`src/`).
+- **Modules**: Differentiated between CommonJS (`require`) and ES Modules (`import`/`export`), and understood dynamic `import()` for lazy loading.
 - **Single Page Application (SPA)**: Grasped the concept of a single HTML file with dynamically swapped components.
-- **Virtual DOM vs. Real DOM**: Understood the VDOM's role as a performance optimization layer, how diffing works, and that the user ultimately interacts with the Real DOM.
-- **Basic Networking**: Learned what a Local Area Network (LAN) is and how to identify devices on the same network via their IP address and subnet mask.
+- **Virtual DOM vs. Real DOM**: Understood the VDOM's role as a performance optimization layer.
 
 ## Next Steps
 
-- Continue with the **Advancing** phase, focusing on:
-    - State Management (Vuex/Pinia).
-    - Advanced configuration with `vue.config.js`.
-    - Using environment variables.
+- **Create the first Pinia store**:
+    - Create a new file at `src/store/auth.js`.
+    - Define state, actions, and getters for managing user authentication.
+    - Refactor the login logic in `LoginView.vue` to use the new auth store.
+    - Update the navigation guard in `router/index.js` to use the auth store instead of `localStorage`.
