@@ -1,35 +1,25 @@
 <template>
-  <VncViewer />
+  <MainView />
 </template>
 
-<script>
-import VncViewer from './components/VncViewer.vue';
-
-export default {
-  name: 'App',
-  components: {
-    VncViewer,
-  },
-};
+<script setup>
+import MainView from './views/MainView.vue';
 </script>
 
 <style>
-/* 移除所有默认边距，让 VNC 视图占满整个屏幕 */
-body, html {
-  margin: 0;
+
+html, body, #app {
   padding: 0;
+  margin: 0;
   height: 100%;
   width: 100%;
-  overflow: hidden; /* 防止出现滚动条 */
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
 }
 
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  height: 100%;
-  width: 100%;
+/* 修正 Element Plus 深色主题下弹出子菜单的背景色问题 */
+/*但是，没解决！*/
+.el-menu--vertical .el-menu.el-menu--popup-container {
+  background-color: #304156 !important;
 }
 </style>

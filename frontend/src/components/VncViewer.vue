@@ -1,5 +1,9 @@
 <template>
-  <div class="vnc-container">
+  <div 
+    class="vnc-container"
+    tabindex="0"
+    @click="handleContainerClick"
+  >
     <div ref="vncScreen" class="vnc-screen"></div>
     <div v-if="status !== 'connected'" class="status-overlay">
       <div class="status-box">
@@ -12,17 +16,26 @@
 </template>
 
 <script setup>
+/* eslint-disable no-undef */
 import { ref, onMounted, onUnmounted } from 'vue';
 import RFB from '@novnc/novnc/lib/rfb';//远程帧缓冲，与服务器端x11vnc通信 
 //noVNC这个模块使用cmj导出对象，webpack无法处理，导致浏览器中exports未定义
 //import RFB from '@novnc/novnc/core/rfb.js';
-//目前无法处理，直接在webpack禁用错误覆盖层+
+//目前无法处理，直接在webpack禁用错误覆盖层
 
 
 const vncScreen = ref(null); // 用于引用屏幕 div 元素
 const status = ref('disconnected'); // 连接状态
 const error = ref(''); // 错误信息
 let rfb = null; // RFB 实例
+
+// 【新增】点击容器时确保获取焦点
+const handleContainerClick = () => {
+  if (rfb) {
+    rfb.focus();
+    console.log('VNC获取焦点，键盘事件已激活');
+  }
+};
 
 const connect = () => {
   if (rfb) {
@@ -39,12 +52,37 @@ const connect = () => {
   // 创建 noVNC RFB 实例
   rfb = new RFB(vncScreen.value, wsUrl, {
     credentials: { password: '123456' }, // 服务器x11vnc设定的连接密码
+    scaleViewport: true,  // 【关键】自动缩放画面以适配容器大小
+    resizeSession: false, // 不改变服务器分辨率，只在客户端缩放显示
+    
+    // 【新增】修复组合键问题的关键配置
+    focusOnClick: true,   // 点击时自动获取键盘焦点，确保Shift等修饰键能被捕获
+    showDotCursor: true,  // 显示本地光标，提升交互体验
   });
+
+  // 【新增】设置显示质量和缩放模式
+  rfb.scaleViewport = true;   // 启用缩放
+  rfb.resizeSession = false;  // 不调整远程分辨率
+  rfb.clipViewport = false;   // 不裁剪视图（显示完整内容）
+  rfb.viewOnly = false;       // 【关键】确保不是只读模式，允许键盘输入
+  rfb.focusOnClick = true;    // 再次确保焦点设置
 
   // 添加事件监听器来更新状态
   rfb.addEventListener('connect', () => {
     status.value = 'connected';
     console.log('VNC 已连接');
+    // 连接成功后再次确保缩放设置
+    if (rfb) {
+      rfb.scaleViewport = true;
+      rfb.resizeSession = false;
+      rfb.clipViewport = false;
+      rfb.viewOnly = false;      // 确保可交互
+      rfb.focusOnClick = true;   // 确保焦点捕获
+      
+      // 【新增】主动触发一次焦点获取
+      rfb.focus();
+      console.log('已启用键盘焦点，组合键（Shift+鼠标）应该可用了吧！');//还是不能用
+    }
   });
 
   rfb.addEventListener('disconnect', (e) => {
@@ -61,6 +99,20 @@ const connect = () => {
     console.error('VNC 安全认证失败:', e.detail.reason);
   });
 };
+
+// 新增：断开连接的方法
+const disconnect = () => {
+  if (rfb) {
+    console.log('手动断开gazebo云端连接...');
+    rfb.disconnect();
+    rfb = null;
+  }
+};
+
+defineExpose({
+  connect,
+  disconnect
+});
 
 // 组件挂载后自动连接
 onMounted(() => {
@@ -81,17 +133,36 @@ onUnmounted(() => {
 
 <style scoped>
 .vnc-container {
-  width: 100vw;
-  /* 视口宽度 */
-  height: 100vh;
-  /* 视口高度 */
+  width: 100%;
+  /* 父容器（el-main）宽度 */
+  height: 100%;
+  /* 父容器（el-main）高度 */
   position: relative;
   background-color: #000;
+  overflow: hidden; /* 隐藏溢出内容，防止滚动条 */
+  outline: none; /* 移除焦点时的默认边框 */
+  cursor: default; /* 默认光标 */
+}
+
+/* 【新增】获取焦点时的视觉提示（可选） */
+.vnc-container:focus {
+  outline: 2px solid rgba(64, 158, 255, 0.3); /* 淡蓝色边框提示已获取焦点 */
 }
 
 .vnc-screen {
   width: 100%;
   height: 100%;
+  overflow: hidden; /* 防止 noVNC canvas 溢出 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 确保 noVNC 内部的 canvas 不会溢出 */
+.vnc-screen :deep(canvas) {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain; /* 保持宽高比 */
 }
 
 .status-overlay {
