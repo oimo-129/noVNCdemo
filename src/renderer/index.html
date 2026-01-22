@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gazebo云平台方案设计</title>
+    <!-- CSP 策略：允许 WebSocket 和 HTTP 连接到任何地址 -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: http: https:; connect-src 'self' ws: wss: http: https:;"
+    />
+    
+    <!-- Gzweb 客户端库 -->
+    <script src="/lib/gz3d.gui.js"></script>
+    
+    <!-- Gzweb 样式 -->
+    <link rel="stylesheet" href="/style/gz3d.css" />
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
