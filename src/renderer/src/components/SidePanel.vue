@@ -42,16 +42,22 @@
             </div>
           </div>
           
-          <div class="menu-section" v-if="gazeboStore.isConnected">
-            <h3>场景信息</h3>
-            <div class="info-item">
-              <span class="label">模型数量:</span>
-              <span class="value">{{ gazeboStore.modelCount }}</span>
-            </div>
-            <div class="info-item">
-              <span class="label">FPS:</span>
-              <span class="value">{{ gazeboStore.fps }}</span>
-            </div>
+          <div class="menu-section">
+            <h3>待完善功能</h3>
+            <ul class="todo-list">
+              <li>
+                <span class="todo-icon">🎮</span>
+                <span>远程 Teleop 控制</span>
+              </li>
+              <li>
+                <span class="todo-icon">📦</span>
+                <span>模型库添加</span>
+              </li>
+              <li>
+                <span class="todo-icon">🔌</span>
+                <span>插件管理</span>
+              </li>
+            </ul>
           </div>
         </template>
         
@@ -357,6 +363,33 @@ function toggleGazeboConnection() {
   .value {
     color: #fff;
     font-weight: 500;
+  }
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid #4a9eff;
+    font-size: 14px;
+    color: #ccc;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+  
+  .todo-icon {
+    font-size: 16px;
   }
 }
 
